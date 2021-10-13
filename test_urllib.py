@@ -5,6 +5,7 @@ import time
 import argparse
 import logging
 import sys
+import base64
 
 from urllib3 import HTTPConnectionPool
 
@@ -19,18 +20,31 @@ encoded_data = json.dumps(query).encode('utf8')
 
 es_connection_pool = HTTPConnectionPool("172.22.235.69", port=9200, maxsize=100)
 
+username = 'elastic'
+password = 'Xjaqmffj12#'
+auth_info = '%s:%s' % (username, password)
+
+base64string = base64.b64encode(auth_info.encode())
+
 took_data = {}
 
+headers = urllib3.make_headers(basic_auth='elastic:Xjaqmffj12#', )
+headers = urllib3.make_headers()
 response = es_connection_pool.request(
                     'GET',
                     '/_search',
                     body=encoded_data,
-                    headers={'Content-Type': 'application/json'}
+                    auth = ('elastic', 'Xjaqmffj12#'),
+                    headers={'Content-Type': 'application/json', ''}
         )
 
 search_response_data = json.loads(response.data)
 
 print(search_response_data['took'])
+print(search_response_data)
+
+
+
 
 
 def query_to_es(index):
