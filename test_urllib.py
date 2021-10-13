@@ -12,7 +12,25 @@ from urllib3 import HTTPConnectionPool
 
 query = {
   "query": {
-    "match_all": {}
+    "bool": {
+      "must": [
+        {
+          "match_phrase": {
+            "send_dy": "7850858542"
+          }
+        },
+        {
+          "match_phrase": {
+            "send_tm": "20211009"
+          }
+        },
+        {
+          "match_phrase": {
+            "trc_no": "005007"
+          }
+        }
+      ]
+    }
   }
 }
 
@@ -20,29 +38,23 @@ encoded_data = json.dumps(query).encode('utf8')
 
 es_connection_pool = HTTPConnectionPool("172.22.235.69", port=9200, maxsize=100)
 
-username = 'elastic'
-password = 'Xjaqmffj12#'
-auth_info = '%s:%s' % (username, password)
 
-base64string = base64.b64encode(auth_info.encode())
-
-took_data = {}
-
-headers = urllib3.make_headers(basic_auth='elastic:Xjaqmffj12#', )
-headers = urllib3.make_headers()
+headers = urllib3.make_headers(basic_auth='elastic:Xjaqmffj12#')
+headers['Content-Type'] = 'application/json'
 
 response = es_connection_pool.request(
                     'GET',
                     '/_search',
                     body=encoded_data,
-                    #headers={'Content-Type': 'application/json', 'Authorization': 'elastic:Xjaqmffj12#'}
                     headers=headers
         )
 
 search_response_data = json.loads(response.data)
+print(search_response_data)
 
 print(search_response_data['took'])
-print(search_response_data)
+
+#int
 
 
 
