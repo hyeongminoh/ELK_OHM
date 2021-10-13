@@ -1,3 +1,4 @@
+import urllib
 import json
 import threading
 import time
@@ -6,6 +7,7 @@ import logging
 import sys
 import random
 import requests
+
 
 parser = argparse.ArgumentParser()
 
@@ -36,44 +38,60 @@ input_f.close()
 
 print("random trc_no = " + random.choice(trcno_list))
 
-print(type(random.choice(trcno_list)))
 query = {
   "query": {
-    "match": {
-      "trc_no": "*"
+    "bool": {
+      "must": [
+        {
+          "match_phrase": {
+            "send_dy": "*"
+          }
+        },
+        {
+          "match_phrase": {
+            "send_tm": "*"
+          }
+        },
+        {
+          "match_phrase": {
+            "trc_no": "*"
+          }
+        }
+      ]
     }
   }
 }
 
+tmp = random.randint(0,len(trcno_list))
+print("random index: ", tmp)
+
+query["query"]["bool"]["must"][0]["match_phrase"]["send_dy"] = date_list[tmp]
+query["query"]["bool"]["must"][1]["match_phrase"]["send_tm"] = time_list[tmp]
+query["query"]["bool"]["must"][2]["match_phrase"]["trc_no"] = trcno_list[tmp]
+
 print(query)
-print(type(query))
 
-query["query"]["match"]["trc_no"] = random.choice(trcno_list)
-print(query)
 
-#검색을 어떤식으로 할건지.. 확인 -> 쿼리를 위처럼 수정하면 될지
-#python으로 검색 쿼리를 날릴지,, 단순히 검색 명령어들 출력해서 따로 날릴지..(이건 내가 너무 아는게 없다)
+# encoded_data = json.dumps(query).encode('utf-8')
 
-encoded_data = json.dumps(query).encode('utf-8')
+# es_connection_pool = HTTPConnectionPool(url, port=port, maxsize=100)
 
-es_connection_pool = HTTPConnectionPool(url, port=port, maxsize=100)
+# took_data = {}
 
-took_data = {}
+# def query_to_es(index):
 
-def query_to_es(index):
-
-    for i in range(0,requests) :
+#     for i in range(0,requests) :
       
-        query["query"]["match"]["trc_no"] = random.choice(trcno_list)
-        response = es_connection_pool.request(
-                    'GET',
-                    '/%s/_search' % index,
-                    body=encoded_data,
-                    headers={'Content-Type': 'application/json'}
-        )
+#         query["query"]["match"]["trc_no"] = random.choice(trcno_list)
+#         response = es_connection_pool.request(
+#                     'GET',
+#                     '/%s/_search' % index,
+#                     body=encoded_data,
+#                     headers={'Content-Type': 'application/json'}
+#         )
 
-        search_response_data = json.loads(response.data)
+#         search_response_data = json.loads(response.data)
 
-        took_data[index].append(search_response_data['took'])
+#         took_data[index].append(search_response_data['took'])
 
-        time.sleep(1)
+#         time.sleep(1)
