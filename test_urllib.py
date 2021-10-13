@@ -17,7 +17,7 @@ query = {
 
 encoded_data = json.dumps(query).encode('utf8')
 
-es_connection_pool = HTTPConnectionPool("172.22.235.10", port=5601, maxsize=100)
+es_connection_pool = HTTPConnectionPool("172.22.235.69", port=9200, maxsize=100)
 
 took_data = {}
 
