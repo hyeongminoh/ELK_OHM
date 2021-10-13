@@ -30,12 +30,13 @@ took_data = {}
 
 headers = urllib3.make_headers(basic_auth='elastic:Xjaqmffj12#', )
 headers = urllib3.make_headers()
+
 response = es_connection_pool.request(
                     'GET',
                     '/_search',
                     body=encoded_data,
-                    auth = ('elastic', 'Xjaqmffj12#'),
-                    headers={'Content-Type': 'application/json', ''}
+                    #headers={'Content-Type': 'application/json', 'Authorization': 'elastic:Xjaqmffj12#'}
+                    headers=headers
         )
 
 search_response_data = json.loads(response.data)

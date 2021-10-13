@@ -24,7 +24,6 @@ time_list = []
 trcno_list = []
 
 
-
 input_f = open('/Users/ohhyeongmin/Desktop/OCB_ELK/test_log.log', 'r')
 while True:
     line = input_f.readline()
@@ -38,7 +37,6 @@ while True:
 input_f.close()
 
 
-#print("random trc_no = " + random.choice(trcno_list))
 
 query = {
   "query": {
@@ -74,19 +72,21 @@ headers['Content-Type'] = 'application/json'
 
 took_data = []
 total_time = 0
-##request 맞춰서 출력 잘 되는 것 확인
+
 for i in range(0,requests) :
   tmp = random.randint(0,len(trcno_list)-1)
   query["query"]["bool"]["must"][0]["match_phrase"]["send_dy"] = date_list[tmp]
   query["query"]["bool"]["must"][1]["match_phrase"]["send_tm"] = time_list[tmp]
   query["query"]["bool"]["must"][2]["match_phrase"]["trc_no"] = trcno_list[tmp] 
-  #print(i, ":" , query, '\n')
-  print("tmp:", tmp)
-  took_data.append(tmp)
-  total_time += tmp
+  response = es_connection_pool.request(
+              'GET',
+              '/_search',
+              body=encoded_data,
+              headers=headers
+  )
 
+  search_response_data = json.loads(response.data)
 
-print('\ntook_list test')
-for i in took_data:
-  print(i)
-print('\ntotal: ', total_time)
+  took_data.append(search_response_data['took'])
+  total_time += search_response_data['took']
+  time.sleep(1)
