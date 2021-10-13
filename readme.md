@@ -36,6 +36,6 @@ elasticsearch 에 접근하려면 'Content-Type'을 필수로 지정해야함 -
 -> 따라서 headrs를 make_headers를 하면 dict로 생성되므로 content-type 추가
 
 결과
-
+![image](https://user-images.githubusercontent.com/29780972/137167384-11e65e4b-d8c0-4903-b7d5-92d8db744e6a.png)
 
 
