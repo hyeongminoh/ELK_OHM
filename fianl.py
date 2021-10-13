@@ -90,3 +90,5 @@ for i in range(0,requests) :
   took_data.append(search_response_data['took'])
   total_time += search_response_data['took']
   time.sleep(1)
+
+#output결과 짜기
