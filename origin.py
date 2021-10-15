@@ -13,17 +13,34 @@ from urllib3 import HTTPConnectionPool
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--requests", help="the number of times search request of cluster (default 1)", default=1, required=False)
-#parser.add_argument("--output_file", help="output file name (default STDOUT)", required=False, type=str)
+parser.add_argument("--output_file", help="output file name (default STDOUT)", required=False, type=str)
 
 args = parser.parse_args()
 
 requests = int(args.requests)
+output_file = args.output_file
+
+output = '/Users/ohhyeongmin/Desktop/OCB_ELK/' + output_file
+
+
 
 date_list = []
 time_list = []
 trcno_list = []
 
+logger = logging.getLogger("elk")
+logger.setLevel(logging.DEBUG)
 
+if output_file != None :
+    logger.addHandler(logging.FileHandler(output_file, mode = "w"))
+    print('output2:', output_file)
+else:
+    logger.addHandler(logging.StreamHandler(sys.stdout))
+
+logger.info("server start!")
+
+# log를 계속 쌓고 싶을 때
+# FileHandler('./log.txt' ,mode = "w")
 
 input_f = open('/Users/ohhyeongmin/Desktop/OCB_ELK/test_log.log', 'r')
 while True:
@@ -36,6 +53,9 @@ while True:
     time_list.append(result[1])
     trcno_list.append(result[2])
 input_f.close()
+
+for i in trcno_list:
+  print(i)
 
 
 #print("random trc_no = " + random.choice(trcno_list))
@@ -85,8 +105,13 @@ for i in range(0,requests) :
   took_data.append(tmp)
   total_time += tmp
 
+  logger.info( "%s\n" % (tmp))
 
-print('\ntook_list test')
-for i in took_data:
-  print(i)
-print('\ntotal: ', total_time)
+
+print('\ntotal_time: ', total_time)
+
+logger.info("== RESULT ==\n")
+logger.info("total_time : %s ms\n" % ( total_time))
+logger.info("average took time : %d ms\n" % (total_time/len(took_data)))
+logger.info("max took time : %d ms\n" % ( max(took_data)))
+logger.info("min took time : %d ms\n\n" % (min(took_data)))

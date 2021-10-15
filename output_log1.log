@@ -1,0 +1,18 @@
+server start!
+4
+
+0
+
+1
+
+== RESULT ==
+
+total_time : 5 ms
+
+average took time : 1 ms
+
+max took time : 4 ms
+
+min took time : 0 ms
+
+

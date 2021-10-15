@@ -13,18 +13,32 @@ from urllib3 import HTTPConnectionPool
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--requests", help="the number of times search request of cluster (default 1)", default=1, required=False)
-#parser.add_argument("--output_file", help="output file name (default STDOUT)", required=False, type=str)
+parser.add_argument("--input_file", help="input file name", required=False, type=str)
+parser.add_argument("--output_file", help="output file name (default STDOUT)", required=False, type=str)
 
 args = parser.parse_args()
 
 requests = int(args.requests)
+output_file = args.output_file
+input_file_nm = args.input_file
+
+input_file = '/app/psuer/performance_test/' + input_file_nm
+print(input_file)
 
 date_list = []
 time_list = []
 trcno_list = []
 
+logger = logging.getLogger("elk")
+logger.setLevel(logging.DEBUG)
 
-input_f = open('/Users/ohhyeongmin/Desktop/OCB_ELK/test_log.log', 'r')
+if output_file != None :
+    logger.addHandler(logging.FileHandler(output_file))
+else:
+    logger.addHandler(logging.StreamHandler(sys.stdout))
+
+
+input_f = open(input_file, 'r')
 while True:
     line = input_f.readline()
     if not line:
@@ -71,7 +85,7 @@ headers = urllib3.make_headers(basic_auth='elastic:Xjaqmffj12#')
 headers['Content-Type'] = 'application/json'
 
 took_data = []
-total_time = 0
+total_took = 0
 
 for i in range(0,requests) :
   tmp = random.randint(0,len(trcno_list)-1)
@@ -86,9 +100,15 @@ for i in range(0,requests) :
   )
 
   search_response_data = json.loads(response.data)
+  print(search_response_data)
 
   took_data.append(search_response_data['took'])
-  total_time += search_response_data['took']
+  total_took += search_response_data['took']
   time.sleep(1)
 
-#output결과 짜기
+
+logger.info("== RESULT ==")
+logger.info("total took time : %d ms\n" % (total_took))
+logger.info("average took time : %d ms\n" % (total_took/len(took_data)))
+logger.info("max took time : %d ms\n" % ( max(took_data)))
+logger.info("min took time : %d ms\n\n" % (min(took_data)))
